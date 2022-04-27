@@ -1,0 +1,43 @@
+{% extends "inventory/base.html" %}
+
+{% block content%}
+        <div id="layoutSidenav">
+
+            <div id="layoutSidenav_content">
+                <main>
+                        <!---Table --->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Site List
+                            </div>
+                            <div class="card-body">
+                                <table class="table" id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Site ID</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Site ID</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        {% for site in sites %}
+                                        <tr>
+                                            <td><a href="inventory/{{site.id}}">{{site.id}}</a></td>
+                                            <td>{{site.name}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </main>
+            </div>
+        </div>
+
+ {% endblock %}

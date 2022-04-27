@@ -1,0 +1,108 @@
+{% extends "inventory/base.html" %}
+
+{% block content%}
+<div>
+    <h1>{{site.id}}</h1>
+    <h2>{{site.name}}</h2>
+</div>
+{% for eq in equipment %}
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        {{eq.eq_type}} {% if eq.name %} - {{eq.name}} {% endif %}
+                    <!-- Button trigger modal -->
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Add {{eq.eq_type}}
+</button>
+    <div>
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add {{eq.eq_type}} to {{site.id}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form id="{{eq}}_add" action="/inventory/{{site.id}}/" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="site_eq" value="{{eq.pk}}">
+          <p>{{add_form.instrument.label}} {{add_form.instrument}}</p>
+          <label for="date">Check in date: </label>
+          <input id="date" type="date" name="date" required>
+          <label for="time">Time: </label>
+          <input id="time" type="time" name="time" required>
+      </form>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" name= 'add' form="{{eq}}_add" class="save btn btn-primary">Add Instrument</button>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+    <div class="card-body">
+        <table class="table" id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>SN</th>
+                    <th>Checked In</th>
+                    <th>Checked Out</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in deployments %}
+                {% if d.site_eq == eq %}
+                <tr>
+                    <td>{{d.instrument.equipment_model.brand}} {{d.instrument.equipment_model.model}}</td>
+                    <td><a href="/instrument/{{d.instrument.pk}}">{{d.instrument.sn}}</a></td>
+                    <td>{{d.check_in}}</td>
+                    <td>{% if d.check_out %}{{d.check_out}}
+                        {% elif d.check_out == None %}
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#checkout_{{d.instrument.model}}_{{d.instrument.sn}}">
+                          Check Out
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="checkout_{{d.instrument.model}}_{{d.instrument.sn}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Check Out {{d.instrument.equipment_model.brand}} {{d.instrument.equipment_model.model}} - {{d.instrument.sn}} from {{site.id}}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  <form id="{{d.instrument.equipment_model.model}}_{{d.instrument.sn}}" action="/inventory/{{site.id}}/" method="post">
+                                      {% csrf_token %}
+                                      <input type="hidden" name="deployment" value="{{d.pk}}">
+                                      <label for="date">Check out date: </label>
+                                      <input id="date" type="date" name="date" required>
+                                      <label for="time">Time: </label>
+                                      <input id="time" type="time" name="time" required>
+                                  </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" name= 'remove' form="{{d.instrument.equipment_model.model}}_{{d.instrument.sn}}" class="save btn btn-secondary">Test</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endif %}</td>
+
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endfor %}
+
+
+{% endblock %}

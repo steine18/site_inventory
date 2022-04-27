@@ -1,0 +1,80 @@
+{% extends "inventory/base.html" %}
+
+{% block content%}
+<div>
+    <h1>{{instrument.equipment_model}}</h1>
+    <h2>SN: {{instrument.sn}}</h2>
+</div>
+{% if deployments %}
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1">Deployments</i>
+
+    </div>
+    <div class="card-body">
+        <table class="table" id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Site Number</th>
+                    <th>Site Name</th>
+                    <th>Start</th>
+                    <th>Removed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in deployments %}
+                <tr>
+                    <td><a href="/inventory/{{d.site_eq.site.id}}"> {{d.site_eq.site.id}}</a></td>
+                    {% if d.site_eq.site.name %}
+                    <td>{{d.site_eq.site.name}}</td>
+                    {% else %}
+                    <td>Electronics Shop</td>
+                    {% endif %}
+                    <td>{{d.check_in}}</td>
+                    <td>{% if d.check_out %}{{d.check_out}}{% endif %}</td>
+
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if tests %}
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1">Tests</i>
+
+    </div>
+    <div class="card-body">
+        <table class="table" id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Test Type</th>
+                    <th>Date</th>
+                    <th>Result</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in tests %}
+                <tr>
+                    <td> {{test.get_test_type_display}}</td>
+                    <td> {{test.test_date}}</td>
+                    <td> {{test.get_result_display}}</td>
+                    <td>{% if test.notes %}{{test.notes}}{% endif %}</td>
+
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+
+
+{% endblock %}
